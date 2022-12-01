@@ -1,5 +1,8 @@
 import random as rand
 import time
+from app import *
+encryption_path = "/Users/volentiralexandra/Documents/enc/"
+import os
 
 def check_if_prime(num):
     if num > 1:
@@ -86,26 +89,30 @@ def get_file_content(filename):
 
 def encrypt_file(file_name, pk, sk):
     message = get_file_content(file_name)
-    print("Plaintext:\n", message)
+    # print("Plaintext:\n", message)
 
     enc = encrypt(pk, message)
-    enc_message = ''.join(map(lambda x: str(x), enc))
-    print("Encrypted:", enc_message)
-    path = "files/" + file_name
-    file = open(path, "w")
-    file.write(enc_message)
-    file.close()
+    print("enc: ", enc)
+    enc_message = ','.join(map(lambda x: str(x), enc))
+    # print("Encrypted:", enc_message)
+    path = encryption_path + os.path.basename(file_name)
+    # if not not os.path.isfile(os.path.abspath(encryption_path)):
+    #     print("file doesnt exist")
+    #     return
+    print(path)
+    with open(path, "w") as f:
+        f.write(enc_message)
+        f.close()
     print()
+
 
 
 def decrypt_file(file_name, pk, sk):
-    path = "files/" + file_name
-
-    enc = get_file_content(path)
-    start = time.time()
+    path = encryption_path + file_name
+    encrypted_message = get_file_content(path)
+    enc_strings = encrypted_message.split(",")
+    enc = [eval(i) for i in enc_strings]
     dec = decrypt(sk, enc)
-    end = time.time()
-    print("Decrypted:\n", dec)
-    print("Decryption time:", end - start)
 
-    print()
+    print("Decrypted:", dec)
+    # print()

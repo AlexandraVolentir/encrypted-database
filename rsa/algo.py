@@ -179,17 +179,17 @@ def test_rsa_algo():
 
 def run_app():
     while True:
-        inp = input('1 - encrypt, 2 - decrypt, 3 - delete, q - quit\n')
+        inp = input('1 - store, 2 - read, 3 - delete, q - quit\n')
         if inp.__eq__("1"):
-            path = input("Please enter the path of the file to encrypt: ")
+            path = input("Please enter the path of the file to store: \n")
             encrypt_file(path)
 
         elif inp.__eq__("2"):
-            f_name = input("Please enter the name of the file to decrypt: ")
+            f_name = input("Please enter the name of the file to read: \n")
             decrypt_file(f_name)
 
         elif inp.__eq__("3"):
-            f_name = input("Please enter the name of the file to delete: ")
+            f_name = input("Please enter the name of the file to delete: \n")
             delete_file_from_database(f_name)
 
         elif inp.__eq__("q"):

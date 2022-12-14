@@ -3,6 +3,7 @@ import hashlib
 import os
 from pymongo import MongoClient
 from global_data import GlobalData
+from errors.errors import *
 # pip install pymongo
 
 
@@ -39,14 +40,15 @@ def add_file_to_database(path, pk, sk, enc_method="rsa"):
     if not abs_path:
         return path + "is an invalid path"
 
-    print("heiho let's go", GlobalData.encryption_path + file_name)
+
+
     # try:
     count = GlobalData.records.count_documents({'file_name': file_name})
-    print("countt", count)
-    # if count >= 1:
-    #     raise DuplicateFileNameDatabase
-    # except DuplicateFileNameDatabase:
-    #     print("exits")
+    try:
+        if count >= 1:
+            raise DuplicateFileNameDatabase
+    except DuplicateFileNameDatabase:
+        print("exits")
 
     data = {
         'file_name': file_name,

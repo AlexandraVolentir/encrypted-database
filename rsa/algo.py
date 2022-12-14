@@ -90,11 +90,12 @@ def get_file_content(filename):
         print("Couldn't get the content of ", filename)
 
 
-def encrypt_file(file_name, pk, sk):
+def encrypt_file(file_name):
+    pk, sk = generate_key_tuples()
     message = get_file_content(file_name)
 
     enc = encrypt(pk, message)
-    print("enc: ", enc)
+    # print("enc: ", enc)
     enc_message = ','.join(map(lambda x: str(x), enc))
     # print("Encrypted:", enc_message)
     path = GlobalData.encryption_path + os.path.basename(file_name)
@@ -112,7 +113,7 @@ def encrypt_file(file_name, pk, sk):
     print()
 
 
-def decrypt_file(file_name, sk):
+def decrypt_file(file_name):
     """
     Decrypts the file using the rsa algorithm
 
@@ -121,14 +122,17 @@ def decrypt_file(file_name, sk):
     :param sk: secret key tuple
     :return: None
     """
+
+    record = GlobalData.records.find_one({'file_name': file_name})
+    sk = (int((record['n'])), int(record['d']))
+
     counter = GlobalData.records.count_documents({'file_name': file_name})
 
-    # if counter >= 1:
-    #     print("Unable to do decryption... Too many files with same name detected")
-    #     return
-    # print(GlobalData.records.find_one({'file_name': file_name}))
+    if counter > 1:
+        print("Unable to do decrpyption... Too many files with same name detected")
+        return
 
-    path = GlobalData.encryption_path + file_name
+    path = record['location']
     encrypted_message = get_file_content(path)
     enc_strings = encrypted_message.split(",")
     enc = [eval(i) for i in enc_strings]
@@ -138,13 +142,7 @@ def decrypt_file(file_name, sk):
     # print()
 
 
-def test_rsa_algo():
-    """
-    Generates the keys on 1024 using p and q
-    calls to encrypt and decrypt functions to test the functionality
-    :return:
-    """
-
+def generate_key_tuples():
     length_in_bits = 1024
     p = get_prime_number(length_in_bits)
     q = get_prime_number(length_in_bits)
@@ -154,12 +152,23 @@ def test_rsa_algo():
 
     pk, sk = generate_key_pair(p, q)
 
-    print("pk: ", pk, "sk", sk)
+    # print("pk: ", pk, "sk", sk)
+    return pk, sk
+
+
+def test_rsa_algo():
+    """
+    Generates the keys on 1024 using p and q
+    calls to encrypt and decrypt functions to test the functionality
+    :return:
+    """
+
     f_name = "files/sample_files_enc/lucian_blaga.txt"
 
-    encrypt_file(f_name, pk, sk)
-    print(GlobalData.records)
+    encrypt_file(f_name)
+
     # pk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # sk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # print("pk1", pk)
-    decrypt_file("lucian_blaga.txt", sk)
+    decrypt_file("lucian_blaga.txt")
+    GlobalData.records.delete_many({})

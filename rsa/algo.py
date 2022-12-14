@@ -17,8 +17,8 @@ def get_prime_number(length_in_bits):
     return rand.choice(primes)
 
 
-# Euclid's algorithm for determining the greatest common divisor
 def compute_gcd(a, b):
+    """Euclid's algo for computing the greatest common divisor"""
     while b != 0:
         a, b = b, a % b
     return a
@@ -80,7 +80,7 @@ def get_file_content(filename):
     try:
         data = open(filename).read()
         return data
-    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
+    except EnvironmentError:  # parent of IOError, OSError
         print("Couldn't get the content of ", filename)
 
 
@@ -97,7 +97,7 @@ def encrypt_file(f_abs_path):
     enc_message = ','.join(map(lambda x: str(x), enc))
     # print("Encrypted:", enc_message)
     enc_path = GlobalData.encryption_path + os.path.basename(f_abs_path)
-    # if not not os.path.isfile(os.path.abspath(GlobalData.encryption_path)):
+    # if not os.path.isfile(os.path.abspath(GlobalData.encryption_path)):
     #     print("file doesnt exist")
     #     return
     if not add_file_to_database(f_abs_path, enc_path, pk, sk):
@@ -106,7 +106,7 @@ def encrypt_file(f_abs_path):
         with open(enc_path, "w") as f:
             f.write(enc_message)
             f.close()
-    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
+    except EnvironmentError:  # parent of IOError, OSError
         print("Couldn't open file for writing encrypted message")
 
 
@@ -115,8 +115,6 @@ def decrypt_file(file_name):
     Decrypts the file using the rsa algorithm
 
     :param file_name: the file name to be found among the stored encrypted files and db names
-    :param pk: public key tuple
-    :param sk: secret key tuple
     :return: None
     """
 

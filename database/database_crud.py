@@ -80,7 +80,7 @@ def delete_file_from_database(file_name):
         print("[db] File \"" + file_name + "\" successfully deleted")
 
     except OSError:
-        print("Unable to delete \"" + file_name + "\"from encrypted db. File doesn't exist or I/O err")
+        print("[db] Unable to delete \"" + file_name + "\"from encrypted db. File doesn't exist or I/O err")
         return
 
 

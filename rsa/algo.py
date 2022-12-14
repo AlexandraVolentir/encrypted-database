@@ -18,67 +18,61 @@ def get_prime_number(length_in_bits):
 
 
 # Euclid's algorithm for determining the greatest common divisor
-def gcd(a, b):
+def compute_gcd(a, b):
     while b != 0:
         a, b = b, a % b
     return a
 
 
-# Extended Euclidean algorithm
-def extended_gcd(a, b):
-    # return (g, x, y) such that a*x + b*y = g = gcd(a, b)
+def extended_gcd(nr1, nr2):
+    """
+
+    :param nr1: fist number
+    :param nr2: second number
+    :return:
+    """
     x0, x1, y0, y1 = 0, 1, 1, 0
-    while a != 0:
-        (q, a), b = divmod(b, a), a
+    while nr1 != 0:
+        (q, nr1), nr2 = divmod(nr2, nr1), nr1
         y0, y1 = y1, y0 - q * y1
         x0, x1 = x1, x0 - q * x1
-    return b, x0, y0
+    return nr2, x0, y0
 
 
-def modular_inverse(a, b):
-    g, x, _ = extended_gcd(a, b)
-    return x % b
+def compute_modular_inverse(nr1, nr2):
+    g, x, _ = extended_gcd(nr1, nr2)
+    return x % nr2
 
 
 def strong_exponent(phi):
     return rand.randrange(1, phi)
 
 
-def weak_exponent(phi):
+def compute_weak_exp(phi):
     return rand.randrange(1, 2 ** 32 - 1)
 
 
-def generate_key_pair(p, q):
+def gen_key_pair(p, q):
     n = p * q
-
-    # Phi is the totient of n
     phi = (p - 1) * (q - 1)
-
-    # Choose an integer e such that e and phi(n) are co-prime
-    e = weak_exponent(phi)
-
-    # Use Euclid's Algorithm to verify that e and phi(n) are co-prime
-    g = gcd(e, phi)
+    e = compute_weak_exp(phi)
+    g = compute_gcd(e, phi)
     while g != 1:
-        e = weak_exponent(phi)
-        g = gcd(e, phi)
-
-    # Use Extended Euclid's Algorithm to generate the private key
-    d = modular_inverse(e, phi)
-
-    # Return public and private key pair
+        e = compute_weak_exp(phi)
+        g = compute_gcd(e, phi)
+    d = compute_modular_inverse(e, phi)
     return (n, e), (n, d)
 
 
-def encrypt(public_key, plaintext):
-    n, key = public_key
-    cipher = [pow(ord(char), key, n) for char in plaintext]
-    return cipher
+def encrypt(pk, text):
+    n, key = pk
+    list_of_ciphered_elements = [pow(ord(c), key, n) for c in text]
+    return list_of_ciphered_elements
 
 
-def decrypt(private_key, ciphertext):
-    n, key = private_key
-    plain = [chr(pow(char, key, n)) for char in ciphertext]
+def decrypt(sk, text):
+    n, key = sk
+    plain = [chr(pow(c, key, n)) for c in text]
     return ''.join(plain)
 
 
@@ -153,7 +147,7 @@ def generate_key_tuples():
     while p == q:
         q = get_prime_number(length_in_bits)
 
-    pk, sk = generate_key_pair(p, q)
+    pk, sk = gen_key_pair(p, q)
 
     # print("pk: ", pk, "sk", sk)
     return pk, sk

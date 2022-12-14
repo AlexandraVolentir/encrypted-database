@@ -1,10 +1,7 @@
 import random as rand
-import time
-from app import *
-import os
-from database.database_crud import *
 
-encryption_path = "/Users/volentiralexandra/Documents/enc/"
+from database.database_crud import *
+from global_data import GlobalData
 
 
 def check_if_prime(num):
@@ -88,9 +85,9 @@ def decrypt(private_key, ciphertext):
 def get_file_content(filename):
     try:
         data = open(filename).read()
+        return data
     except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
         print("Couldn't get the content of ", filename)
-    return data
 
 
 def encrypt_file(file_name, pk, sk):
@@ -100,8 +97,8 @@ def encrypt_file(file_name, pk, sk):
     print("enc: ", enc)
     enc_message = ','.join(map(lambda x: str(x), enc))
     # print("Encrypted:", enc_message)
-    path = encryption_path + os.path.basename(file_name)
-    # if not not os.path.isfile(os.path.abspath(encryption_path)):
+    path = GlobalData.encryption_path + os.path.basename(file_name)
+    # if not not os.path.isfile(os.path.abspath(GlobalData.encryption_path)):
     #     print("file doesnt exist")
     #     return
     print(path)
@@ -115,7 +112,7 @@ def encrypt_file(file_name, pk, sk):
     print()
 
 
-def decrypt_file(file_name, pk, sk):
+def decrypt_file(file_name, sk):
     """
     Decrypts the file using the rsa algorithm
 
@@ -124,7 +121,14 @@ def decrypt_file(file_name, pk, sk):
     :param sk: secret key tuple
     :return: None
     """
-    path = encryption_path + file_name
+    counter = GlobalData.records.count_documents({'file_name': file_name})
+
+    # if counter >= 1:
+    #     print("Unable to do decryption... Too many files with same name detected")
+    #     return
+    # print(GlobalData.records.find_one({'file_name': file_name}))
+
+    path = GlobalData.encryption_path + file_name
     encrypted_message = get_file_content(path)
     enc_strings = encrypted_message.split(",")
     enc = [eval(i) for i in enc_strings]
@@ -141,7 +145,6 @@ def test_rsa_algo():
     :return:
     """
 
-    global records
     length_in_bits = 1024
     p = get_prime_number(length_in_bits)
     q = get_prime_number(length_in_bits)
@@ -152,10 +155,11 @@ def test_rsa_algo():
     pk, sk = generate_key_pair(p, q)
 
     print("pk: ", pk, "sk", sk)
-    f_name = "files/files_for_encryption/lucian_blaga.txt"
+    f_name = "files/sample_files_enc/lucian_blaga.txt"
 
     encrypt_file(f_name, pk, sk)
+    print(GlobalData.records)
     # pk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # sk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # print("pk1", pk)
-    decrypt_file("lucian_blaga.txt", pk, sk)
+    decrypt_file("lucian_blaga.txt", sk)

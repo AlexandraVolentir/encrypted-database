@@ -1,5 +1,3 @@
-import random as rand
-import time
 from rsa.algo import *
 from database.database_crud import *
 

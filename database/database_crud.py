@@ -1,13 +1,9 @@
 import certifi
 import hashlib
 import os
-
-# pip install pymongo
 from pymongo import MongoClient
-
-records = None
-encryption_path = "/Users/volentiralexandra/Documents/enc/"
-password = "VyJ2IDqlRdVBoHjS"
+from global_data import GlobalData
+# pip install pymongo
 
 
 def md5(file_path):
@@ -37,32 +33,32 @@ def add_file_to_database(path, pk, sk, enc_method="rsa"):
     :return: message of the successful/unsuccessful course of the adding operation
     """
 
-    global encryption_path
-
     file_name = os.path.basename(path)
     abs_path = os.path.abspath(path)
-    print(abs_path)
+
     if not abs_path:
         return path + "is an invalid path"
 
-    print("heiho let's go", encryption_path + file_name)
-    try:
-        if records.find_one({'file_name': file_name}):
-            return "File \"" + file_name + "\" already exists in encrypted database"
-    except ConnectionError:
-        print("Couldn't connect to the db")
+    print("heiho let's go", GlobalData.encryption_path + file_name)
+    # try:
+    count = GlobalData.records.count_documents({'file_name': file_name})
+    print("countt", count)
+    # if count >= 1:
+    #     raise DuplicateFileNameDatabase
+    # except DuplicateFileNameDatabase:
+    #     print("exits")
 
     data = {
         'file_name': file_name,
         'hash': md5(path),
-        'location': encryption_path + file_name,
+        'location': GlobalData.encryption_path + file_name,
         'enc_method': enc_method,
-        'n': pk[0],
-        'e': pk[1],
-        'd': sk[1]
+        'n': str(pk[0]),
+        'e': str(pk[1]),
+        'd': str(sk[1])
     }
 
-    records.insert_one(data)
+    GlobalData.records.insert_one(data)
     return "File added successfully to encrypted db"
 
 
@@ -75,14 +71,17 @@ def remove_file_from_database(file_name):
     :return: Success message/ error message
     """
 
-    global records
-    records.delete_one({'file_name': file_name})
+    GlobalData.records.delete_one({'file_name': file_name})
 
     try:
-        os.remove(encryption_path + file_name)
+        os.remove(GlobalData.encryption_path + file_name)
         return "Removal successful"
     except OSError:
         return "file doesnt exist"
+
+
+def get_records():
+    return GlobalData.records
 
 
 def create_connection_to_database():
@@ -92,18 +91,15 @@ def create_connection_to_database():
     :return: None
     """
 
-    global password
-    global records
+    try:
+        client = MongoClient(
+            "mongodb+srv://volentir:" + GlobalData.password + "@cluster0.orlskgk.mongodb.net/?retryWrites=true&w=majority",
+            tlsCAFile=certifi.where())
 
+        db = client.get_database("encrypted_db")
+        GlobalData.records = db.encrypted_file_data
+        # GlobalData.records.delete_many({})
 
-    client = MongoClient(
-        "mongodb+srv://volentir:" + password + "@cluster0.orlskgk.mongodb.net/?retryWrites=true&w=majority",
-        tlsCAFile=certifi.where())
-
-    db = client.get_database("encrypted_db")
-    records = db.encrypted_file_data
-
-    # except:
-    #     print("Unable to connect to the database. Either the cluster doesnt exist, either do don't have "
-    #           "access to it, either your internet connection is unstable. Please try later")
+    except ConnectionError:
+        exit(0)
 

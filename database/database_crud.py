@@ -47,7 +47,7 @@ def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):
         if count >= 1:
             raise DuplicateFileNameDatabase
     except DuplicateFileNameDatabase:
-        print("exits")
+        return False
 
     data = {
         'file_name': file_name,
@@ -61,6 +61,7 @@ def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):
 
     GlobalData.records.insert_one(data)
     print("[db] File \"" + file_name + "\" successfully added to encrypted db")
+    return True
 
 
 def delete_file_from_database(file_name):
@@ -77,10 +78,10 @@ def delete_file_from_database(file_name):
     try:
         os.remove(GlobalData.encryption_path + file_name)
         print("[db] File \"" + file_name + "\" successfully deleted from encrypted db")
-        return "Removal successful"
+
     except OSError:
-        print("CRUD: Failures of deleting \"" + file_name + "\"from encrypted db ")
-        return "file doesnt exist"
+        print("Unable to delete \"" + file_name + "\"from encrypted db. File doesn't exist or I/O err")
+        return
 
 
 def get_records():

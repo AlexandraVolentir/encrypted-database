@@ -4,7 +4,7 @@ from database.database_crud import *
 
 def main():
     create_connection_to_database()
-    test_rsa_algo()
+    run_app()
 
 
 if __name__ == '__main__':

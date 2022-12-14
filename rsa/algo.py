@@ -91,6 +91,10 @@ def get_file_content(filename):
 
 
 def encrypt_file(f_abs_path):
+    if not os.path.isfile(f_abs_path):
+        print("Invalid path.")
+        return
+
     pk, sk = generate_key_tuples()
     message = get_file_content(f_abs_path)
 
@@ -102,14 +106,14 @@ def encrypt_file(f_abs_path):
     # if not not os.path.isfile(os.path.abspath(GlobalData.encryption_path)):
     #     print("file doesnt exist")
     #     return
-    add_file_to_database(f_abs_path, enc_path, pk, sk)
+    if not add_file_to_database(f_abs_path, enc_path, pk, sk):
+        print("File already exists in db, unable to encrypt")
     try:
         with open(enc_path, "w") as f:
             f.write(enc_message)
             f.close()
     except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
         print("Couldn't open file for writing encrypted message")
-    print()
 
 
 def decrypt_file(file_name):
@@ -175,11 +179,21 @@ def test_rsa_algo():
 
 def run_app():
     while True:
-        inp = input('1 - encrypt, 2 - decrypt, 3 - delete, q - quit')
+        inp = input('1 - encrypt, 2 - decrypt, 3 - delete, q - quit\n')
         if inp.__eq__("1"):
-            path = input("Please write/paste the file path")
+            path = input("Please enter the path of the file to encrypt: ")
             encrypt_file(path)
 
+        elif inp.__eq__("2"):
+            f_name = input("Please enter the name of the file to decrypt: ")
+            decrypt_file(f_name)
+
+        elif inp.__eq__("3"):
+            f_name = input("Please enter the name of the file to delete: ")
+            delete_file_from_database(f_name)
+
+        elif inp.__eq__("q"):
+            print("Goodbye")
         else:
-            print(f'You entered {password}')
-            break
+            print("unknown command, try again")
+        print()

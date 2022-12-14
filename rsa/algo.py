@@ -86,7 +86,10 @@ def decrypt(private_key, ciphertext):
 
 
 def get_file_content(filename):
-    data = open(filename).read()
+    try:
+        data = open(filename).read()
+    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
+        print("Couldn't get the content of ", filename)
     return data
 
 
@@ -102,13 +105,25 @@ def encrypt_file(file_name, pk, sk):
     #     print("file doesnt exist")
     #     return
     print(path)
-    with open(path, "w") as f:
-        f.write(enc_message)
-        f.close()
+    add_file_to_database(file_name, pk, sk)
+    try:
+        with open(path, "w") as f:
+            f.write(enc_message)
+            f.close()
+    except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
+        print("Couldn't open file for writing encrypted message")
     print()
 
 
 def decrypt_file(file_name, pk, sk):
+    """
+    Decrypts the file using the rsa algorithm
+
+    :param file_name: the file name to be found among the stored encrypted files and db names
+    :param pk: public key tuple
+    :param sk: secret key tuple
+    :return: None
+    """
     path = encryption_path + file_name
     encrypted_message = get_file_content(path)
     enc_strings = encrypted_message.split(",")
@@ -120,8 +135,14 @@ def decrypt_file(file_name, pk, sk):
 
 
 def test_rsa_algo():
+    """
+    Generates the keys on 1024 using p and q
+    calls to encrypt and decrypt functions to test the functionality
+    :return:
+    """
+
     global records
-    length_in_bits = 512
+    length_in_bits = 1024
     p = get_prime_number(length_in_bits)
     q = get_prime_number(length_in_bits)
 
@@ -129,11 +150,12 @@ def test_rsa_algo():
         q = get_prime_number(length_in_bits)
 
     pk, sk = generate_key_pair(p, q)
+
     print("pk: ", pk, "sk", sk)
-    f_name = "files/files_for_encryption/mary_oliver.txt"
+    f_name = "files/files_for_encryption/lucian_blaga.txt"
 
     encrypt_file(f_name, pk, sk)
     # pk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # sk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # print("pk1", pk)
-    decrypt_file("mary_oliver.txt", pk, sk)
+    decrypt_file("lucian_blaga.txt", pk, sk)

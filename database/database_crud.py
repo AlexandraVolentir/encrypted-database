@@ -10,14 +10,15 @@ encryption_path = "/Users/volentiralexandra/Documents/enc/"
 password = "VyJ2IDqlRdVBoHjS"
 
 
-def md5(file_name):
+def md5(file_path):
     """
-    Computes the md5 message-digest algorithm giving a 128-bit hash value
-    :param file_name:
-    :return:
+    Computes the md5 message digest algo giving a 128-bit hash value
+    :param file_path: path of the file
+    :return: the digest
     """
+
     md5_hash = hashlib.md5()
-    with open(file_name, "rb") as f:
+    with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             md5_hash.update(chunk)
     return md5_hash.hexdigest()
@@ -45,8 +46,11 @@ def add_file_to_database(path, pk, sk, enc_method="rsa"):
         return path + "is an invalid path"
 
     print("heiho let's go", encryption_path + file_name)
-    if records.find_one({'file_name': file_name}):
-        return "File \"" + file_name + "\" already exists in encrypted database"
+    try:
+        if records.find_one({'file_name': file_name}):
+            return "File \"" + file_name + "\" already exists in encrypted database"
+    except ConnectionError:
+        print("Couldn't connect to the db")
 
     data = {
         'file_name': file_name,
@@ -70,6 +74,7 @@ def remove_file_from_database(file_name):
     :param file_name: file name to eb removed from the system and from database
     :return: Success message/ error message
     """
+
     global records
     records.delete_one({'file_name': file_name})
 
@@ -90,15 +95,15 @@ def create_connection_to_database():
     global password
     global records
 
-    try:
-        client = MongoClient(
-            "mongodb+srv://volentir:" + password + "@cluster0.orlskgk.mongodb.net/?retryWrites=true&w=majority",
-            tlsCAFile=certifi.where())
 
-        db = client.get_database("encrypted_db")
-        records = db.encrypted_file_data
+    client = MongoClient(
+        "mongodb+srv://volentir:" + password + "@cluster0.orlskgk.mongodb.net/?retryWrites=true&w=majority",
+        tlsCAFile=certifi.where())
 
-    except:
-        print("Unable to connect to the database. Either the cluster doesnt exist, either do don't have "
-              "access to it, either your internet connection is unstable. Please try later")
+    db = client.get_database("encrypted_db")
+    records = db.encrypted_file_data
+
+    # except:
+    #     print("Unable to connect to the database. Either the cluster doesnt exist, either do don't have "
+    #           "access to it, either your internet connection is unstable. Please try later")
 

@@ -167,12 +167,7 @@ def test_rsa_algo():
     """
 
     f_abs_path = "files/sample_files_enc/lucian_blaga.txt"
-
     encrypt_file(f_abs_path)
-
-    # pk1 = records.find_one({'file_name': os.path.basename(f_name)})
-    # sk1 = records.find_one({'file_name': os.path.basename(f_name)})
-    # print("pk1", pk)
     decrypt_file("lucian_blaga.txt")
     delete_file_from_database("lucian_blaga.txt")
 
@@ -194,6 +189,7 @@ def run_app():
 
         elif inp.__eq__("q"):
             print("Goodbye")
+            break
         else:
             print("unknown command, try again")
         print()

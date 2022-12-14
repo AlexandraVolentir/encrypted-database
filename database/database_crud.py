@@ -60,7 +60,7 @@ def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):
     }
 
     GlobalData.records.insert_one(data)
-    print("[db] File \"" + file_name + "\" successfully added to encrypted db")
+    print("[db] File \"" + file_name + "\" successfully added")
     return True
 
 
@@ -77,7 +77,7 @@ def delete_file_from_database(file_name):
 
     try:
         os.remove(GlobalData.encryption_path + file_name)
-        print("[db] File \"" + file_name + "\" successfully deleted from encrypted db")
+        print("[db] File \"" + file_name + "\" successfully deleted")
 
     except OSError:
         print("Unable to delete \"" + file_name + "\"from encrypted db. File doesn't exist or I/O err")

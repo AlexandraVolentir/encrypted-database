@@ -21,12 +21,13 @@ def md5(file_path):
     return md5_hash.hexdigest()
 
 
-def add_file_to_database(path, pk, sk, enc_method="rsa"):
+def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):
     """
     Inserts the file and its info (location, hash, encryption method, keys) in mongodb
     using the insert_one method on the current records after verifying that it doesn't already
     exist in the database
 
+    :param enc_path: path for encryption
     :param enc_method: method of encryption (rsa by default)
     :param path: absolute path of the encrypted file
     :param pk: public key (n, e)
@@ -40,8 +41,6 @@ def add_file_to_database(path, pk, sk, enc_method="rsa"):
     if not abs_path:
         return path + "is an invalid path"
 
-
-
     # try:
     count = GlobalData.records.count_documents({'file_name': file_name})
     try:
@@ -53,7 +52,7 @@ def add_file_to_database(path, pk, sk, enc_method="rsa"):
     data = {
         'file_name': file_name,
         'hash': md5(path),
-        'location': GlobalData.encryption_path + file_name,
+        'location': enc_path,
         'enc_method': enc_method,
         'n': str(pk[0]),
         'e': str(pk[1]),
@@ -61,10 +60,10 @@ def add_file_to_database(path, pk, sk, enc_method="rsa"):
     }
 
     GlobalData.records.insert_one(data)
-    return "File added successfully to encrypted db"
+    print("[db] File \"" + file_name + "\" successfully added to encrypted db")
 
 
-def remove_file_from_database(file_name):
+def delete_file_from_database(file_name):
     """
     Removes the file first from mongodb atlas (with delete_one method),
     then from the system with os.remove()
@@ -77,8 +76,10 @@ def remove_file_from_database(file_name):
 
     try:
         os.remove(GlobalData.encryption_path + file_name)
+        print("[db] File \"" + file_name + "\" successfully deleted from encrypted db")
         return "Removal successful"
     except OSError:
+        print("CRUD: Failures of deleting \"" + file_name + "\"from encrypted db ")
         return "file doesnt exist"
 
 

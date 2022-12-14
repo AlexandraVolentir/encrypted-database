@@ -90,22 +90,21 @@ def get_file_content(filename):
         print("Couldn't get the content of ", filename)
 
 
-def encrypt_file(file_name):
+def encrypt_file(f_abs_path):
     pk, sk = generate_key_tuples()
-    message = get_file_content(file_name)
+    message = get_file_content(f_abs_path)
 
     enc = encrypt(pk, message)
     # print("enc: ", enc)
     enc_message = ','.join(map(lambda x: str(x), enc))
     # print("Encrypted:", enc_message)
-    path = GlobalData.encryption_path + os.path.basename(file_name)
+    enc_path = GlobalData.encryption_path + os.path.basename(f_abs_path)
     # if not not os.path.isfile(os.path.abspath(GlobalData.encryption_path)):
     #     print("file doesnt exist")
     #     return
-    print(path)
-    add_file_to_database(file_name, pk, sk)
+    add_file_to_database(f_abs_path, enc_path, pk, sk)
     try:
-        with open(path, "w") as f:
+        with open(enc_path, "w") as f:
             f.write(enc_message)
             f.close()
     except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
@@ -163,12 +162,24 @@ def test_rsa_algo():
     :return:
     """
 
-    f_name = "files/sample_files_enc/lucian_blaga.txt"
+    f_abs_path = "files/sample_files_enc/lucian_blaga.txt"
 
-    encrypt_file(f_name)
+    encrypt_file(f_abs_path)
 
     # pk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # sk1 = records.find_one({'file_name': os.path.basename(f_name)})
     # print("pk1", pk)
     decrypt_file("lucian_blaga.txt")
-    GlobalData.records.delete_many({})
+    delete_file_from_database("lucian_blaga.txt")
+
+
+def run_app():
+    while True:
+        inp = input('1 - encrypt, 2 - decrypt, 3 - delete, q - quit')
+        if inp.__eq__("1"):
+            path = input("Please write/paste the file path")
+            encrypt_file(path)
+
+        else:
+            print(f'You entered {password}')
+            break

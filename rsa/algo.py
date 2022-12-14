@@ -1,8 +1,11 @@
 import random as rand
 import time
 from app import *
-encryption_path = "/Users/volentiralexandra/Documents/enc/"
 import os
+from database.database_crud import *
+
+encryption_path = "/Users/volentiralexandra/Documents/enc/"
+
 
 def check_if_prime(num):
     if num > 1:
@@ -89,7 +92,6 @@ def get_file_content(filename):
 
 def encrypt_file(file_name, pk, sk):
     message = get_file_content(file_name)
-    # print("Plaintext:\n", message)
 
     enc = encrypt(pk, message)
     print("enc: ", enc)
@@ -106,7 +108,6 @@ def encrypt_file(file_name, pk, sk):
     print()
 
 
-
 def decrypt_file(file_name, pk, sk):
     path = encryption_path + file_name
     encrypted_message = get_file_content(path)
@@ -116,3 +117,23 @@ def decrypt_file(file_name, pk, sk):
 
     print("Decrypted:", dec)
     # print()
+
+
+def test_rsa_algo():
+    global records
+    length_in_bits = 512
+    p = get_prime_number(length_in_bits)
+    q = get_prime_number(length_in_bits)
+
+    while p == q:
+        q = get_prime_number(length_in_bits)
+
+    pk, sk = generate_key_pair(p, q)
+    print("pk: ", pk, "sk", sk)
+    f_name = "files/files_for_encryption/mary_oliver.txt"
+
+    encrypt_file(f_name, pk, sk)
+    # pk1 = records.find_one({'file_name': os.path.basename(f_name)})
+    # sk1 = records.find_one({'file_name': os.path.basename(f_name)})
+    # print("pk1", pk)
+    decrypt_file("mary_oliver.txt", pk, sk)

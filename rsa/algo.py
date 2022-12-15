@@ -48,17 +48,17 @@ def strong_exponent(phi):
     return rand.randrange(1, phi)
 
 
-def compute_weak_exp(phi):
+def compute_weak_exp():
     return rand.randrange(1, 2 ** 32 - 1)
 
 
 def gen_key_pair(p, q):
     n = p * q
     phi = (p - 1) * (q - 1)
-    e = compute_weak_exp(phi)
+    e = compute_weak_exp()
     g = compute_gcd(e, phi)
     while g != 1:
-        e = compute_weak_exp(phi)
+        e = compute_weak_exp()
         g = compute_gcd(e, phi)
     d = compute_modular_inverse(e, phi)
     return (n, e), (n, d)
@@ -94,15 +94,10 @@ def encrypt_file(f_abs_path):
 
     pk, sk = generate_key_tuples()
     message = get_file_content(f_abs_path)
-
     enc = encrypt(pk, message)
-    # print("enc: ", enc)
     enc_message = ','.join(map(lambda x: str(x), enc))
-    # print("Encrypted:", enc_message)
     enc_path = GlobalData.encryption_path + os.path.basename(f_abs_path)
-    # if not os.path.isfile(os.path.abspath(GlobalData.encryption_path)):
-    #     print("file doesnt exist")
-    #     return
+
     if not add_file_to_database(f_abs_path, enc_path, pk, sk):
         print("File already exists in db, unable to encrypt")
     try:
@@ -138,9 +133,7 @@ def decrypt_file(file_name):
     enc_strings = encrypted_message.split(",")
     enc = [eval(i) for i in enc_strings]
     dec = decrypt(sk, enc)
-
     print("Decrypted:", dec)
-    # print()
 
 
 def generate_key_tuples():
@@ -152,8 +145,6 @@ def generate_key_tuples():
         q = get_prime_number(length_in_bits)
 
     pk, sk = gen_key_pair(p, q)
-
-    # print("pk: ", pk, "sk", sk)
     return pk, sk
 
 
@@ -161,7 +152,7 @@ def test_rsa_algo():
     """
     Generates the keys on 1024 using p and q
     calls to encrypt and decrypt functions to test the functionality
-    :return:
+    :return: None
     """
 
     f_abs_path = "files/sample_files_enc/lucian_blaga.txt"

@@ -1,24 +1,9 @@
 import certifi
-import hashlib
 import os
 from pymongo import MongoClient
 from global_data import GlobalData
 from errors.errors import *
-# pip install pymongo
-
-
-def md5(file_path):
-    """
-    Computes the md5 message digest algo giving a 128-bit hash value
-    :param file_path: path of the file
-    :return: the digest
-    """
-
-    md5_hash = hashlib.md5()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            md5_hash.update(chunk)
-    return md5_hash.hexdigest()
+from utils.utils import md5
 
 
 def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):
@@ -41,7 +26,6 @@ def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):
     if not abs_path:
         return path + "is an invalid path"
 
-    # try:
     count = GlobalData.records.count_documents({'file_name': file_name})
     try:
         if count >= 1:
@@ -99,12 +83,12 @@ def create_connection_to_database():
 
     try:
         client = MongoClient(
-            "mongodb+srv://volentir:" + GlobalData.password + "@cluster0.orlskgk.mongodb.net/?retryWrites=true&w=majority",
+            "mongodb+srv://volentir:" + GlobalData.password + "@cluster0.orlskgk.mongodb.net/?retryWrites=true&w"
+                                                              "=majority",
             tlsCAFile=certifi.where())
 
         db = client.get_database("encrypted_db")
         GlobalData.records = db.encrypted_file_data
-        # GlobalData.records.delete_many({})
 
     except ConnectionError:
         exit(0)

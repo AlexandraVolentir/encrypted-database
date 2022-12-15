@@ -72,7 +72,9 @@ def delete_file_from_database(file_name):
     :param file_name: file name to eb removed from the system and from database
     :return: Success message/ error message
     """
-
+    if not os.path.isdir(GlobalData.encryption_path):
+        print("encryption path specified in global_data.py invalid, change and try again")
+        return
     GlobalData.records.delete_one({'file_name': file_name})
 
     try:

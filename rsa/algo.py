@@ -85,6 +85,9 @@ def get_file_content(filename):
 
 
 def encrypt_file(f_abs_path):
+    if not os.path.isdir(GlobalData.encryption_path):
+        print("encryption path specified in global_data.py invalid, change and try again")
+        return
     if not os.path.isfile(f_abs_path):
         print("Invalid path.")
         return
@@ -118,6 +121,9 @@ def decrypt_file(file_name):
     :return: None
     """
 
+    if not os.path.isdir(GlobalData.encryption_path):
+        print("encryption path specified in global_data.py invalid, change and try again")
+        return
     record = GlobalData.records.find_one({'file_name': file_name})
     sk = (int((record['n'])), int(record['d']))
 

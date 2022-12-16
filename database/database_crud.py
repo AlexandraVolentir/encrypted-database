@@ -3,7 +3,7 @@ import os
 from pymongo import MongoClient
 from global_data.global_data import GlobalData
 from errors.errors import *
-from utils.utils import md5
+from rsa.utils.utils import md5
 
 
 def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):

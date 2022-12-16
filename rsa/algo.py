@@ -1,7 +1,7 @@
 import random as rand
 
 from database.database_crud import *
-from global_data import GlobalData
+from global_data.global_data import GlobalData
 
 
 def check_if_prime(num):
@@ -146,19 +146,6 @@ def generate_key_tuples():
 
     pk, sk = gen_key_pair(p, q)
     return pk, sk
-
-
-def test_rsa_algo():
-    """
-    Generates the keys on 1024 using p and q
-    calls to encrypt and decrypt functions to test the functionality
-    :return: None
-    """
-
-    f_abs_path = "files/sample_files_enc/lucian_blaga.txt"
-    encrypt_file(f_abs_path)
-    decrypt_file("lucian_blaga.txt")
-    delete_file_from_database("lucian_blaga.txt")
 
 
 def run_app():

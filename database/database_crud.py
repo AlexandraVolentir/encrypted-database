@@ -1,7 +1,7 @@
 import certifi
 import os
 from pymongo import MongoClient
-from global_data import GlobalData
+from global_data.global_data import GlobalData
 from errors.errors import *
 from utils.utils import md5
 

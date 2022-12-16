@@ -125,7 +125,7 @@ def decrypt_file(file_name):
     counter = GlobalData.records.count_documents({'file_name': file_name})
 
     if counter > 1:
-        print("Unable to do decrpyption... Too many files with same name detected")
+        print("Unable to do decryption... Too many files with same name detected")
         return
 
     path = record['location']

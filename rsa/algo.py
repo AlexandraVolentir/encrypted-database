@@ -5,6 +5,11 @@ from global_data.global_data import GlobalData
 
 
 def check_if_prime(num):
+    """
+    Checks if the number is prime
+    :param num: the number
+    :return: bool statement, the result of the nr being prime or not
+    """
     if num > 1:
         for i in range(2, num):
             if (num % i) == 0:
@@ -13,12 +18,18 @@ def check_if_prime(num):
 
 
 def get_prime_number(length_in_bits):
+    """
+    Returns the prime number in the specified bit interval
+    :param length_in_bits: bit interval
+    :return: prime number
+    """
     primes = [i for i in range(0, length_in_bits) if check_if_prime(i)]
     return rand.choice(primes)
 
 
 def compute_gcd(a, b):
     """Euclid's algo for computing the greatest common divisor"""
+
     while b != 0:
         a, b = b, a % b
     return a
@@ -26,10 +37,10 @@ def compute_gcd(a, b):
 
 def extended_gcd(nr1, nr2):
     """
-
+    Computes the extended euclids' algorithm
     :param nr1: fist number
     :param nr2: second number
-    :return:
+    :return: result of extended gcd
     """
     x0, x1, y0, y1 = 0, 1, 1, 0
     while nr1 != 0:
@@ -40,19 +51,43 @@ def extended_gcd(nr1, nr2):
 
 
 def compute_modular_inverse(nr1, nr2):
+    """
+    Computes the modular inverse
+    :param nr1:
+    :param nr2:
+    :return:the modular inverse
+    """
     g, x, _ = extended_gcd(nr1, nr2)
     return x % nr2
 
 
 def strong_exponent(phi):
+    """
+    Calculates the strong exponent
+    :param phi: phi
+    :return: a number between 1 and phi
+    """
+
     return rand.randrange(1, phi)
 
 
 def compute_weak_exp():
+    """
+    Calculates the weak exponent
+    :return: weak exponent
+    """
+
     return rand.randrange(1, 2 ** 32 - 1)
 
 
 def gen_key_pair(p, q):
+    """
+    Generates a key pair from the prime numbers p and q
+    :param p: first prime number
+    :param q: second prime number
+    :return: two tuples of keys - public and secret
+    """
+
     n = p * q
     phi = (p - 1) * (q - 1)
     e = compute_weak_exp()
@@ -65,18 +100,38 @@ def gen_key_pair(p, q):
 
 
 def encrypt(pk, text):
+    """
+    Encrypts the text with the public key
+    :param pk: public key
+    :param text: text
+    :return: lust of encrypted elements
+    """
+
     n, key = pk
     list_of_ciphered_elements = [pow(ord(c), key, n) for c in text]
     return list_of_ciphered_elements
 
 
 def decrypt(sk, text):
+    """
+    Decrypts the text with the secret key
+    :param sk: secret key
+    :param text: text
+    :return: decrypted text
+    """
+
     n, key = sk
     plain = [chr(pow(c, key, n)) for c in text]
     return ''.join(plain)
 
 
 def get_file_content(filename):
+    """
+    Puts the content of a file into a string
+    :param filename: name of the file
+    :return: string with file contents
+    """
+
     try:
         data = open(filename).read()
         return data
@@ -85,6 +140,14 @@ def get_file_content(filename):
 
 
 def encrypt_file(f_abs_path):
+    """
+    Validates the path of the file to be encrypted,
+    generates key tuples for encryption and decryption,
+    adds metadata to the database
+    writes encrypted text into file
+    :param f_abs_path: absolute path of the file to be encrypted
+    :return:None
+    """
     if not os.path.isdir(GlobalData.encryption_path):
         print("encryption path specified in global_data.py invalid, change and try again")
         return
@@ -137,6 +200,11 @@ def decrypt_file(file_name):
 
 
 def generate_key_tuples():
+    """
+    Generates the private key and the secret key
+    :return: the tuples of keys
+    """
+
     length_in_bits = 1024
     p = get_prime_number(length_in_bits)
     q = get_prime_number(length_in_bits)
@@ -149,6 +217,10 @@ def generate_key_tuples():
 
 
 def run_app():
+    """
+    Outputs the menu of the app
+    :return: None
+    """
     while True:
         inp = input('1 - store, 2 - read, 3 - delete, q - quit\n')
         if inp.__eq__("1"):

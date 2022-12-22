@@ -70,10 +70,6 @@ def delete_file_from_database(file_name):
         return
 
 
-def get_records():
-    return GlobalData.records
-
-
 def create_connection_to_database():
     """
     Creates the connection with mongodb atlas, using the connection string
@@ -92,4 +88,3 @@ def create_connection_to_database():
 
     except ConnectionError:
         exit(0)
-

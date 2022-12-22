@@ -3,6 +3,10 @@ from database.database_crud import *
 
 
 def main():
+    """
+    Here is called the main function of the app
+    """
+
     create_connection_to_database()
     run_app()
 

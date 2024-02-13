@@ -34,13 +34,13 @@ def add_file_to_database(path, enc_path, pk, sk, enc_method="rsa"):
         return False
 
     data = {
-        'file_name': file_name,
-        'hash': md5(path),
-        'location': enc_path,
-        'enc_method': enc_method,
-        'n': str(pk[0]),
-        'e': str(pk[1]),
-        'd': str(sk[1])
+        'Name': file_name,
+        'Email': email,
+        'location': enc_path
+        # 'enc_method': enc_method,
+        # 'n': str(pk[0]),
+        # 'e': str(pk[1]),
+        # 'd': str(sk[1])
     }
 
     GlobalData.records.insert_one(data)
